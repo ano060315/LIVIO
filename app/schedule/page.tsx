@@ -1,24 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function SchedulePage() {
-  // 入力欄の文字
+  // 入力欄
   const [schedule, setSchedule] = useState("");
 
   // 予定一覧
   const [schedules, setSchedules] = useState<string[]>([]);
 
-  // 「追加」ボタンを押したとき
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // 初回のみ読み込み
+  useEffect(() => {
+    const saved = localStorage.getItem("schedules");
+
+    if (saved) {
+      try {
+        setSchedules(JSON.parse(saved));
+      } catch (error) {
+        console.error("読み込み失敗", error);
+      }
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // 予定が変わるたび保存
+useEffect(() => {
+  if (!isLoaded) return;
+
+  localStorage.setItem(
+    "schedules",
+    JSON.stringify(schedules)
+  );
+}, [schedules, isLoaded]);
+
+  // 追加
   const addSchedule = () => {
-    // 空欄なら追加しない
-    if (schedule.trim() === "") return;
+    if (!schedule.trim()) return;
 
-    // 配列に予定を追加
-    setSchedules([...schedules, schedule]);
-
-    // 入力欄を空にする
+    setSchedules((prev) => [...prev, schedule]);
     setSchedule("");
+  };
+
+  // 削除
+  const deleteSchedule = (index: number) => {
+    setSchedules((prev) =>
+      prev.filter((_, i) => i !== index)
+    );
   };
 
   return (
@@ -35,7 +64,9 @@ export default function SchedulePage() {
           onChange={(e) => setSchedule(e.target.value)}
         />
 
-        <button onClick={addSchedule}>追加</button>
+        <button onClick={addSchedule}>
+          追加
+        </button>
       </section>
 
       <section className="card">
@@ -46,7 +77,29 @@ export default function SchedulePage() {
         ) : (
           <ul>
             {schedules.map((item, index) => (
-              <li key={index}>{item}</li>
+              <li
+                key={index}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "10px",
+                }}
+              >
+                {item}
+
+                <button
+                  style={{
+                    width: "80px",
+                    backgroundColor: "#ef4444",
+                  }}
+                  onClick={() =>
+                    deleteSchedule(index)
+                  }
+                >
+                  削除
+                </button>
+              </li>
             ))}
           </ul>
         )}
