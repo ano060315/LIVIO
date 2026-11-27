@@ -1,0 +1,18 @@
+{
+  "name": "LIVIEW",
+  "short_name": "LIVIEW",
+  "description": "予定・タスク・家計簿・メモをまとめる生活管理アプリ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

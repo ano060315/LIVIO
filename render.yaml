@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: livio-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile.api
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 4000
+
+  - type: web
+    name: livio-web
+    runtime: docker
+    dockerfilePath: ./Dockerfile.web
+    envVars:
+      - key: API_PROXY_URL
+        value: https://livio-api.onrender.com
+      - key: NEXT_PUBLIC_API_URL
+        value: ""

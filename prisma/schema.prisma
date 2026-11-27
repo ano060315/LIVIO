@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  password  String
+  schedules Schedule[]
+  tasks     Task[]
+  transactions Transaction[]
+  memos     Memo[]
+  budgets   Budget[]
+  fixedExpenses FixedExpense[]
+  savingGoals SavingGoal[]
+  habits     Habit[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Schedule {
+  id         Int      @id @default(autoincrement())
+  title      String
+  date       String
+  time       String
+  endTime    String   @default("")
+  category   String   @default("仕事")
+  repeatRule String   @default("なし")
+  taskId     Int?
+  task       Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Task {
+  id        Int      @id @default(autoincrement())
+  title     String
+  completed Boolean  @default(false)
+  dueDate   String   @default("")
+  priority  String   @default("中")
+  category  String   @default("その他")
+  schedules Schedule[]
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  type      String
+  amount    Int
+  category  String
+  date      String
+  memo      String   @default("")
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Budget {
+  id        Int      @id @default(autoincrement())
+  month     String
+  amount    Int
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([month, userId])
+}
+
+model FixedExpense {
+  id        Int      @id @default(autoincrement())
+  name      String
+  amount    Int
+  category  String
+  dueDay    Int
+  active    Boolean  @default(true)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SavingGoal {
+  id        Int      @id @default(autoincrement())
+  name      String
+  targetAmount Int
+  savedAmount Int     @default(0)
+  targetDate String  @default("")
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Habit {
+  id          Int           @id @default(autoincrement())
+  title       String
+  category    String        @default("健康")
+  frequency   String        @default("毎日")
+  weekdays    String        @default("")
+  active      Boolean       @default(true)
+  userId      Int
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  records     HabitRecord[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model HabitRecord {
+  id        Int      @id @default(autoincrement())
+  habitId   Int
+  habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  date      String
+  completed Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([habitId, date])
+}
+
+model Memo {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

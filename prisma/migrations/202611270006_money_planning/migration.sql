@@ -1,0 +1,40 @@
+CREATE TABLE "Budget" (
+  "id" SERIAL NOT NULL,
+  "month" TEXT NOT NULL,
+  "amount" INTEGER NOT NULL,
+  "userId" INTEGER NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "Budget_pkey" PRIMARY KEY ("id")
+);
+
+CREATE UNIQUE INDEX "Budget_month_userId_key" ON "Budget"("month", "userId");
+
+CREATE TABLE "FixedExpense" (
+  "id" SERIAL NOT NULL,
+  "name" TEXT NOT NULL,
+  "amount" INTEGER NOT NULL,
+  "category" TEXT NOT NULL,
+  "dueDay" INTEGER NOT NULL,
+  "active" BOOLEAN NOT NULL DEFAULT true,
+  "userId" INTEGER NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "FixedExpense_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE "SavingGoal" (
+  "id" SERIAL NOT NULL,
+  "name" TEXT NOT NULL,
+  "targetAmount" INTEGER NOT NULL,
+  "savedAmount" INTEGER NOT NULL DEFAULT 0,
+  "targetDate" TEXT NOT NULL DEFAULT '',
+  "userId" INTEGER NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "SavingGoal_pkey" PRIMARY KEY ("id")
+);
+
+ALTER TABLE "Budget" ADD CONSTRAINT "Budget_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "FixedExpense" ADD CONSTRAINT "FixedExpense_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "SavingGoal" ADD CONSTRAINT "SavingGoal_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
